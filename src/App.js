@@ -1,39 +1,44 @@
 import React, { Component } from 'react';
-//import logo from './logo.svg';
 import './App.css';
-import GroceryList from './GroceryList.js';
-import GroceryListItems from './GroceryListItems.js';
+import BucketListItems from './BucketListItems.js';
+import ReactFileReader from 'react-file-reader';
 
 class App extends Component {
   inputElement =React.createRef()
   constructor() {
     super()
+    
     this.state = {
       items: [],
-      currentItem: {text:'', key:''},
+      currentItem: {text:'', key:'', pictures: []},
+      imageValue: 'Upload images',
     }
-//    this.deleteItem = this.deleteItem.bind(this);
-    
   }
+  
   handleInput = e => {
     const itemText = e.target.value
-    const currentItem = { text: itemText, key: Date.now() }
+    const currentItem = this.state.currentItem
+    currentItem.text = itemText;
+    currentItem.key = Date.now();
     this.setState({
       currentItem,
     })
   }
+  
   addItem = e => {
     e.preventDefault()
     const newItem = this.state.currentItem
     if (newItem.text !== '') {
-      console.log(newItem)
       const items = [...this.state.items, newItem]
       this.setState({
         items: items,
-        currentItem: { text: '', key: '' },
+        imageValue: 'Upload images',
+        currentItem: { text: '', key: '', pictures: []},
       })
+      
     }
   }  
+  
   deleteItem = key => {
     const filteredItems = this.state.items.filter(item => {
       return item.key !== key
@@ -42,15 +47,31 @@ class App extends Component {
       items: filteredItems,
     })
   }
+  
+  handleFiles = (files) => {
+  let imageValue = (files.base64.length+' files uploaded') 
+  let currentItem = this.state.currentItem
+  currentItem.pictures = files.base64;
+  this.setState ({
+    currentItem,
+    imageValue,
+  })
+}
+  
   render() {
     return (
       <div className="App">
-          <GroceryList 
-          addItem={this.addItem}
-          inputElement={this.inputElement}
-          handleInput={this.handleInput}
-          currentItem={this.state.currentItem} />
-          <GroceryListItems entries={this.state.items} deleteItem={this.deleteItem.bind(this)} />
+        <h2>Add items to your Bucket List</h2>
+        <div className="header">
+          <form>
+            <ReactFileReader fileTypes={[".csv",".zip",".jpeg",".png",".jpg"]} base64={true} multipleFiles={true} handleFiles={this.handleFiles}>
+              <input type ="button" className='btn' value={this.state.imageValue}/>
+            </ReactFileReader>
+            <input type = "text" placeholder="Title" ref={this.inputElement} value={this.state.currentItem.text} onChange={this.handleInput} />
+            <button onClick={this.addItem}> Add </button><br></br> 
+          </form>
+        </div>
+        <BucketListItems items={this.state.items} deleteItem={this.deleteItem.bind(this)} />
       </div>
     );
   }
