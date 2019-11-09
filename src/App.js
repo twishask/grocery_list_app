@@ -7,14 +7,14 @@ class App extends Component {
   inputElement =React.createRef()
   constructor() {
     super()
-    
+
     this.state = {
       items: [],
       currentItem: {text:'', key:'', pictures: []},
       imageValue: 'Upload images',
     }
   }
-  
+
   handleInput = e => {
     const itemText = e.target.value
     const currentItem = this.state.currentItem
@@ -24,7 +24,7 @@ class App extends Component {
       currentItem,
     })
   }
-  
+
   addItem = e => {
     e.preventDefault()
     const newItem = this.state.currentItem
@@ -35,10 +35,10 @@ class App extends Component {
         imageValue: 'Upload images',
         currentItem: { text: '', key: '', pictures: []},
       })
-      
+
     }
-  }  
-  
+  }
+
   deleteItem = key => {
     const filteredItems = this.state.items.filter(item => {
       return item.key !== key
@@ -47,17 +47,19 @@ class App extends Component {
       items: filteredItems,
     })
   }
-  
+
   handleFiles = (files) => {
-  let imageValue = (files.base64.length+' files uploaded') 
+    console.log(files)
+  let imageValue = (files.base64.length+' files uploaded')
   let currentItem = this.state.currentItem
   currentItem.pictures = files.base64;
+  console.log(currentItem);
   this.setState ({
     currentItem,
     imageValue,
   })
 }
-  
+
   render() {
     return (
       <div className="App">
@@ -68,7 +70,7 @@ class App extends Component {
               <input type ="button" className='btn' value={this.state.imageValue}/>
             </ReactFileReader>
             <input type = "text" placeholder="Title" ref={this.inputElement} value={this.state.currentItem.text} onChange={this.handleInput} />
-            <button onClick={this.addItem}> Add </button><br></br> 
+            <button onClick={this.addItem}> Add </button><br></br>
           </form>
         </div>
         <BucketListItems items={this.state.items} deleteItem={this.deleteItem.bind(this)} />
